@@ -1,0 +1,311 @@
+/* Pixel Art Garage Theme with CRT Scanlines */
+:root {
+  --bg-color: #0d1117;
+  --panel-bg: #161b22;
+  --panel-border: #30363d;
+  --accent-green: #3fb950;
+  --accent-amber: #d29922;
+  --accent-red: #f85149;
+  --text-primary: #c9d1d9;
+  --text-bright: #ffffff;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-terminal: 'VT323', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-terminal);
+  font-size: 20px;
+  line-height: 1.3;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* CRT Scanlines Effect */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Pixel Box Styling */
+.pixel-panel {
+  background-color: var(--panel-bg);
+  border: 4px solid var(--panel-border);
+  box-shadow: 4px 4px 0px #000000;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.pixel-header {
+  text-align: center;
+  border: 4px solid var(--accent-green);
+  background-color: #040d06;
+  padding: 15px;
+  margin-bottom: 25px;
+  box-shadow: 6px 6px 0px #000000;
+}
+
+.pixel-header h1 {
+  font-family: var(--font-pixel);
+  font-size: 22px;
+  color: var(--accent-green);
+  text-shadow: 2px 2px #000000;
+}
+
+.pixel-header h1 span {
+  color: var(--text-bright);
+}
+
+.subtitle {
+  font-size: 18px;
+  color: var(--accent-amber);
+  margin-top: 5px;
+  letter-spacing: 1px;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 850px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-title {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--accent-amber);
+  margin-bottom: 15px;
+  border-bottom: 2px dashed var(--panel-border);
+  padding-bottom: 8px;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: var(--text-bright);
+}
+
+.pixel-input {
+  width: 100%;
+  padding: 8px;
+  background-color: #0d1117;
+  color: var(--accent-green);
+  border: 2px solid var(--panel-border);
+  font-family: var(--font-terminal);
+  font-size: 18px;
+  outline: none;
+}
+
+.pixel-input:focus {
+  border-color: var(--accent-green);
+}
+
+.pixel-btn {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  padding: 12px 16px;
+  color: #000;
+  background-color: var(--accent-green);
+  border: none;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px #000;
+  transition: transform 0.1s, background-color 0.1s;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #000;
+}
+
+.pixel-btn.secondary-btn {
+  background-color: var(--accent-amber);
+}
+
+.pixel-btn.outline-btn {
+  background-color: transparent;
+  color: var(--accent-amber);
+  border: 2px solid var(--accent-amber);
+}
+
+/* Feed Cards */
+.car-card {
+  background-color: #0f141c;
+  border: 2px solid var(--panel-border);
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.car-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 8px;
+}
+
+.car-title {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--text-bright);
+}
+
+.match-badge {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  padding: 6px 10px;
+  background-color: var(--accent-green);
+  color: #000;
+}
+
+.car-body {
+  font-size: 18px;
+}
+
+.spec-note {
+  color: var(--accent-amber);
+  font-size: 16px;
+  margin-top: 5px;
+  background: #1c180e;
+  padding: 6px;
+  border-left: 3px solid var(--accent-amber);
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.card-actions .pixel-btn {
+  width: 50%;
+  margin-top: 0;
+}
+
+/* Retro Gauges */
+.gauge-container {
+  margin: 10px 0;
+}
+
+.gauge-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.gauge-bar-outer {
+  width: 100%;
+  height: 14px;
+  background-color: #000;
+  border: 1px solid var(--panel-border);
+  padding: 1px;
+}
+
+.gauge-bar-inner {
+  height: 100%;
+  background-color: var(--accent-green);
+}
+
+/* Modals */
+.pixel-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.pixel-modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  background-color: var(--panel-bg);
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--accent-red);
+  color: #fff;
+  border: none;
+  font-family: var(--font-pixel);
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.issue-block {
+  background-color: #0d1117;
+  border: 1px solid var(--panel-border);
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.issue-title {
+  color: var(--accent-red);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+}
+
+.search-link-box {
+  background-color: #0d1117;
+  border: 1px solid var(--accent-amber);
+  padding: 10px;
+  margin: 10px 0;
+  word-break: break-all;
+  font-family: var(--font-terminal);
+  font-size: 18px;
+  color: var(--accent-amber);
+}

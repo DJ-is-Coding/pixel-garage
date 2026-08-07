@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIXEL GARAGE // Classic Vehicle Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Retro CRT Filter Overlay -->
+  <div class="crt-overlay"></div>
+
+  <div class="app-container">
+    <!-- Header Section -->
+    <header class="pixel-header">
+      <div class="logo-box">
+        <h1><span>[</span> PIXEL GARAGE <span>]</span></h1>
+        <p class="subtitle">ALGORITHMIC CLASSIC CAR FINDER & ALERT ENGINE</p>
+      </div>
+    </header>
+
+    <main class="grid-layout">
+      <!-- Left Column: Preference Questionnaire -->
+      <section class="pixel-panel questionnaire-panel">
+        <h2 class="panel-title">/// PREFERENCE MATRIX</h2>
+        <form id="questionnaire-form">
+          
+          <div class="form-group">
+            <label for="driving_preference">DRIVING PROFILE:</label>
+            <select id="driving_preference" class="pixel-input">
+              <option value="sporty">Sporty & Agile</option>
+              <option value="practical">Practical / Daily Cruiser</option>
+              <option value="stylish">Classic Style Icon</option>
+              <option value="diy">DIY / Project Car</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="mechanical_ability">MECHANICAL SKILL:</label>
+            <select id="mechanical_ability" class="pixel-input">
+              <option value="1">Novice (Shop Repairs Only)</option>
+              <option value="2" selected>Weekend Wrench (Oil, Brakes, Plugs)</option>
+              <option value="3">Master (Engine Swaps, Wiring)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="usage_type">USAGE INTENT:</label>
+            <select id="usage_type" class="pixel-input">
+              <option value="weekend">Weekend Cruiser</option>
+              <option value="daily">Daily / Frequently Driven</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="transmission">TRANSMISSION:</label>
+            <select id="transmission" class="pixel-input">
+              <option value="manual">Manual Stick-Shift</option>
+              <option value="automatic">Automatic</option>
+              <option value="flexible" selected>Flexible / Any</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="budget_parts_tol">PARTS / COST TOLERANCE:</label>
+            <select id="budget_parts_tol" class="pixel-input">
+              <option value="1">Low (Cheap, easy to find)</option>
+              <option value="2" selected>Moderate (Standard Classic)</option>
+              <option value="3">High (Rare/Import Parts OK)</option>
+            </select>
+          </div>
+
+          <button type="button" id="calculate-btn" class="pixel-btn primary-btn">
+            RUN MATCHING ENGINE
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Ranked Results Feed -->
+      <section class="pixel-panel feed-panel">
+        <h2 class="panel-title">/// RANKED VEHICLE FEED</h2>
+        <div id="results-container" class="results-container">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Inspection Modal Drawer -->
+  <div id="inspector-modal" class="pixel-modal hidden">
+    <div class="modal-content pixel-panel">
+      <button class="modal-close" id="modal-close-btn">X</button>
+      <h2 id="modal-car-title" class="modal-title">VEHICLE INSPECTOR</h2>
+      <div id="modal-body">
+        <!-- Inspector Content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Alerts Synthesizer Modal -->
+  <div id="alerts-modal" class="pixel-modal hidden">
+    <div class="modal-content pixel-panel">
+      <button class="modal-close" id="alerts-close-btn">X</button>
+      <h2 class="modal-title">SYNTHESIZED SEARCH & ALERTS</h2>
+      <div id="alerts-modal-body">
+        <!-- Alert Instructions Content -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/scoring.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
