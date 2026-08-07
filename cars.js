@@ -49,7 +49,7 @@ const CARS_DATABASE = [
     "production_years": "1989-1997",
     "style_category": "Roadster",
     "transmission_options": ["manual", "automatic"],
-    "image_file": "mazda_na_miata.jgp",
+    "image_file": "mazda_na_miata.jpg",
     "scores": {
       "sportiness": 9,
       "practicality": 3,

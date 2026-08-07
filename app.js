@@ -98,8 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Auto-pixelate standard photo onto canvas
       const imageSrc = car.image_file || `${car.id}.jpg`;
-      pixelateImage(`canvas-${car.id}`, imageSrc, 0.15); // 0.15 = 15% pixel resolution
+      pixelateImage(`canvas-${car.id}`, imageSrc, 0.20); // 0.20 = 20% pixel resolution
     });
+    
 
     // Attach button listeners
     document.querySelectorAll('.inspect-btn').forEach(btn => {
@@ -117,7 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
    * @param {string} imageSrc - Source path of standard image file
    * @param {number} scale - Pixelation ratio (0.1 = heavy pixelation, 0.3 = lighter)
    */
-  function pixelateImage(canvasId, imageSrc, scale = 0.15) {
+  /**
+   * Automatic Client-Side Image Pixelator
+   * Preserves original aspect ratio and increases detail scale.
+   */
+  function pixelateImage(canvasId, imageSrc, scale = 0.35) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -126,30 +131,47 @@ document.addEventListener('DOMContentLoaded', () => {
     img.src = imageSrc;
 
     img.onload = () => {
-      // Calculate scaled down dimensions
-      const tinyWidth = Math.max(16, Math.floor(canvas.width * scale));
-      const tinyHeight = Math.max(8, Math.floor(canvas.height * scale));
+      // 1. Calculate aspect ratio to center without stretching
+      const imgRatio = img.width / img.height;
+      const canvasRatio = canvas.width / canvas.height;
 
-      // Offscreen canvas for downscaling
+      let drawWidth = canvas.width;
+      let drawHeight = canvas.height;
+      let dx = 0;
+      let dy = 0;
+
+      if (imgRatio > canvasRatio) {
+        // Image is wider than canvas -> crop/fill horizontally & center
+        drawWidth = canvas.height * imgRatio;
+        dx = (canvas.width - drawWidth) / 2;
+      } else {
+        // Image is taller than canvas -> crop/fill vertically & center
+        drawHeight = canvas.width / imgRatio;
+        dy = (canvas.height - drawHeight) / 2;
+      }
+
+      // 2. Offscreen downscale canvas using the higher scale (0.35 for fine detail)
+      const tinyWidth = Math.max(32, Math.floor(drawWidth * scale));
+      const tinyHeight = Math.max(16, Math.floor(drawHeight * scale));
+
       const offscreenCanvas = document.createElement('canvas');
       offscreenCanvas.width = tinyWidth;
       offscreenCanvas.height = tinyHeight;
       const offContext = offscreenCanvas.getContext('2d');
 
-      // Draw high-res image down to tiny size
+      // Draw photo downscaled onto tiny canvas
       offContext.drawImage(img, 0, 0, tinyWidth, tinyHeight);
 
-      // Disable smoothing on main canvas before upscaling
+      // 3. Render pixelated result centered on main canvas without distorting
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.imageSmoothingEnabled = false;
       ctx.webkitImageSmoothingEnabled = false;
       ctx.mozImageSmoothingEnabled = false;
 
-      // Draw downscaled pixels back up to full canvas size
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(offscreenCanvas, 0, 0, tinyWidth, tinyHeight, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(offscreenCanvas, 0, 0, tinyWidth, tinyHeight, dx, dy, drawWidth, drawHeight);
     };
 
-    // Fallback placeholder if image is missing
+    // Fallback placeholder if image fails to load
     img.onerror = () => {
       ctx.fillStyle = '#0f141c';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
