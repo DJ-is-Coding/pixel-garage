@@ -1,14 +1,14 @@
 /**
  * Zero-Runtime Algorithmic Vehicle Matcher
- * Uses Multi-Attribute Decision-Making (MADM) with weighted linear normalization.
+ * Supports Multi-Variant Matching & MADM Scoring
  */
 
 const ScoringEngine = {
   /**
    * Calculates dynamic match scores based on user inputs.
    * @param {Object} userInputs - Preferences from the frontend questionnaire.
-   * @param {Array} carDatabase - Array of car objects from cars.json.
-   * @returns {Array} Sorted list of cars with match percentage and spec guidance.
+   * @param {Array} carDatabase - Array of car objects from cars.js.
+   * @returns {Array} Sorted list of cars with match percentage and recommended variant.
    */
   evaluateMatches(userInputs, carDatabase) {
     const {
@@ -43,7 +43,6 @@ const ScoringEngine = {
         break;
     }
 
-    // Adjust weights based on usage profile
     if (usage_type === 'daily') {
       weights.practicality += 0.1;
       weights.parts_availability += 0.1;
@@ -51,49 +50,73 @@ const ScoringEngine = {
     }
 
     return carDatabase.map(car => {
+      // Evaluate best variant if variants array exists
+      let chosenVariant = null;
+      let variantBonus = { sportiness: 0, practicality: 0, style: 0 };
+
+      if (car.variants && car.variants.length > 0) {
+        // Find variant that aligns best with user's highest-weighted attribute
+        let bestScore = -Infinity;
+
+        car.variants.forEach(variant => {
+          let vScore = 0;
+          const pBonus = variant.practicality_bonus || 0;
+          const sBonus = variant.sportiness_bonus || 0;
+          const stBonus = variant.style_bonus || 0;
+
+          vScore += (car.scores.practicality + pBonus) * weights.practicality;
+          vScore += (car.scores.sportiness + sBonus) * weights.sportiness;
+          vScore += (car.scores.style + stBonus) * weights.style;
+
+          if (vScore > bestScore) {
+            bestScore = vScore;
+            chosenVariant = variant;
+            variantBonus = { sportiness: sBonus, practicality: pBonus, style: stBonus };
+          }
+        });
+      }
+
+      // Compute weighted base score
       let rawScore = 0;
       let totalWeight = 0;
 
-      // Compute weighted sum (0-10 scale per attribute)
       for (const [attr, weight] of Object.entries(weights)) {
-        rawScore += (car.scores[attr] || 5) * weight;
+        const bonus = variantBonus[attr] || 0;
+        const attrScore = Math.min(10, (car.scores[attr] || 5) + bonus);
+        rawScore += attrScore * weight;
         totalWeight += weight;
       }
 
       let matchPercentage = (rawScore / (totalWeight * 10)) * 100;
 
-      // Apply Mechanical Ability vs DIY Ease Penalty
-      // Novice (1) looking at hard DIY car (< 6) receives penalty
+      // Penalties
       if (mechanical_ability === 1 && car.scores.diy_ease < 6) {
         matchPercentage -= (6 - car.scores.diy_ease) * 4;
       }
 
-      // Apply Transmission Preference Penalty & Recommendation
-      let targetTrim = car.trim_alternatives.preferred;
+      let targetTrim = chosenVariant?.trim_note || car.trim_alternatives?.preferred || "Standard Trim";
+
       if (transmission !== 'flexible') {
         const hasPreferredTrans = car.transmission_options.includes(transmission);
         if (!hasPreferredTrans) {
           matchPercentage -= 15;
-        } else if (transmission === 'automatic' && car.trim_alternatives.automatic_fallback) {
+        } else if (transmission === 'automatic' && car.trim_alternatives?.automatic_fallback && !chosenVariant) {
           targetTrim = car.trim_alternatives.automatic_fallback;
         }
       }
 
-      // Parts availability check for low-tolerance users
       if (budget_parts_tol === 1 && car.scores.parts_availability < 7) {
         matchPercentage -= 10;
       }
 
-      // Clamp score between 0% and 100%
       const finalScore = Math.min(100, Math.max(15, Math.round(matchPercentage)));
 
       return {
         ...car,
         matchScore: finalScore,
+        activeVariant: chosenVariant,
         recommendedTrim: targetTrim,
-        fallbackNote: transmission === 'automatic' && car.trim_alternatives.automatic_fallback
-          ? `Selected Automatic spec: Target the ${car.trim_alternatives.automatic_fallback}.`
-          : `Target spec: ${car.trim_alternatives.preferred}`
+        fallbackNote: chosenVariant ? chosenVariant.trim_note : `Target spec: ${targetTrim}`
       };
     }).sort((a, b) => b.matchScore - a.matchScore);
   }

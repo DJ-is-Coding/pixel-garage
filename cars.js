@@ -10,7 +10,7 @@ const CARS_DATABASE = [
     "production_years": "1982-1994",
     "style_category": "Sports Sedan / Coupe",
     "transmission_options": ["manual", "automatic"],
-    "image_file": "bmw_e30_325i.jpg", // Direct image reference
+    "image_file": "bmw_e30_325i.png", // Direct image reference
     "scores": {
       "sportiness": 8,
       "practicality": 7,
@@ -106,35 +106,65 @@ const CARS_DATABASE = [
     ]
   },
   {
-    "id": "mercedes_w123",
-    "make": "Mercedes-Benz",
-    "model": "W123",
-    "generation": "W123",
-    "production_years": "1976-1985",
-    "style_category": "Luxury Classic Sedan",
-    "transmission_options": ["automatic", "manual"],
-    "image_file": "mercedes_w123.jpg",
-    "scores": {
-      "sportiness": 3,
-      "practicality": 9,
-      "style": 8,
-      "parts_availability": 8,
-      "diy_ease": 8
+  "id": "mercedes_w123",
+  "make": "Mercedes-Benz",
+  "model": "W123",
+  "generation": "W123",
+  "production_years": "1976-1985",
+  "style_category": "Luxury Classic",
+  "transmission_options": ["automatic", "manual"],
+  "scores": {
+    "sportiness": 3,
+    "practicality": 8, // Base score for sedan
+    "style": 8,
+    "parts_availability": 8,
+    "diy_ease": 8
+  },
+  "variants": [
+    {
+      "variant_id": "w123_sedan",
+      "name": "300D Sedan",
+      "image_file": "mercedes_w123_300d.png",
+      "practicality_bonus": 0,
+      "trim_note": "Target spec: 300D Turbodiesel (OM617 Engine)"
     },
-    "trim_alternatives": {
-      "preferred": "300D Turbodiesel (OM617 Engine)",
-      "automatic_fallback": "300D Automatic",
-      "budget_alternative": "240D Manual"
+    {
+      "variant_id": "w123_estate",
+      "name": "300TD Estate (Wagon)",
+      "image_file": "mercedes_w123_300td_wagon.png",
+      "practicality_bonus": 2, // Boosts practicality to 10/10
+      "trim_note": "Target spec: 300TD Turbodiesel Wagon (Self-leveling rear suspension)"
+    }
+  ],
+  "search_keywords": [
+    "Mercedes W123",
+    "Mercedes 300D",
+    "Mercedes 300TD",
+    "Mercedes W123 Wagon",
+    "Mercedes W123 Estate"
+  ],
+  "known_issues": [
+    {
+      "component": "Vacuum System Leaks",
+      "severity": "Medium",
+      "frequency": "Very Common",
+      "estimated_repair_cost": "€100 - €400",
+      "what_to_look_for": "Controls door locks, climate controls, and engine shutoff valve."
     },
-    "search_keywords": ["Mercedes W123", "Mercedes 300D"],
-    "known_issues": [
-      {
-        "component": "Vacuum System Leaks",
-        "severity": "Medium",
-        "frequency": "Very Common",
-        "estimated_repair_cost": "$100 - $500",
-        "what_to_look_for": "Controls door locks and shutoff valve."
-      }
-    ]
-  }
+    {
+      "component": "SLS (Self-Leveling Suspension) - Estate Only",
+      "severity": "High",
+      "frequency": "Common on Estates",
+      "estimated_repair_cost": "€500 - €1,200",
+      "what_to_look_for": "Check hydraulic spheres (accumulators) in rear cargo area if ride is harsh or bouncy."
+    },
+    {
+      "component": "Wheel Arch & Jacking Point Rust",
+      "severity": "High",
+      "frequency": "Common in salt-road climates",
+      "estimated_repair_cost": "€600 - €2,000",
+      "what_to_look_for": "Inspect inner wheel arches, sills, and jacking points for bubbling paint or structural rust."
+    }
+  ]
+}
 ];

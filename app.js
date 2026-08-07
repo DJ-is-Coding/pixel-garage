@@ -1,5 +1,5 @@
 /**
- * Main UI Controller & Automatic Image-to-Pixel Renderer
+ * Main UI Controller - Multi-Variant Enabled
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -53,20 +53,47 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'car-card';
 
+      // Determine initial active variant & image
+      const hasVariants = car.variants && car.variants.length > 0;
+      const activeVar = car.activeVariant || (hasVariants ? car.variants[0] : null);
+      const initialImage = activeVar ? activeVar.image_file : (car.image_file || `${car.id}.jpg`);
+      const initialNote = activeVar ? activeVar.trim_note : car.fallbackNote;
+
+      // Build Variant Dropdown HTML if variants exist
+      let variantDropdownHtml = '';
+      if (hasVariants) {
+        const optionsHtml = car.variants.map(v => `
+          <option value="${v.variant_id}" ${activeVar && v.variant_id === activeVar.variant_id ? 'selected' : ''}>
+            ${v.name}
+          </option>
+        `).join('');
+
+        variantDropdownHtml = `
+          <div class="variant-selector-container">
+            <span class="variant-label">BODY VARIANT:</span>
+            <select class="variant-dropdown" data-car-id="${car.id}">
+              ${optionsHtml}
+            </select>
+          </div>
+        `;
+      }
+
       card.innerHTML = `
         <div class="car-card-header">
           <span class="car-title">${car.make} ${car.model} (${car.generation})</span>
           <span class="match-badge">${car.matchScore}% MATCH</span>
         </div>
+
+        ${variantDropdownHtml}
         
-        <!-- Canvas for Auto-Pixelated Normal Image -->
+        <!-- Object-Fit Image Frame -->
         <div class="car-image-container">
-          <canvas id="canvas-${car.id}" class="pixel-art-canvas" width="240" height="120"></canvas>
+          <img id="img-${car.id}" src="${initialImage}" alt="${car.make} ${car.model}" class="car-pixel-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'60\'><rect width=\'100%\' height=\'100%\' fill=\'%230f141c\'/><text x=\'50%\' y=\'50%\' fill=\'%233fb950\' font-family=\'monospace\' font-size=\'12\' text-anchor=\'middle\' dominant-baseline=\'middle\'>[ NO IMAGE ]</text></svg>'">
         </div>
 
         <div class="car-body">
           <p><strong>Years:</strong> ${car.production_years} | <strong>Category:</strong> ${car.style_category}</p>
-          <div class="spec-note">${car.fallbackNote}</div>
+          <div id="note-${car.id}" class="spec-note">${initialNote}</div>
           
           <div class="gauge-container">
             <div class="gauge-label">
@@ -95,14 +122,30 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       resultsContainer.appendChild(card);
-
-      // Auto-pixelate standard photo onto canvas
-      const imageSrc = car.image_file || `${car.id}.jpg`;
-      pixelateImage(`canvas-${car.id}`, imageSrc, 0.20); // 0.20 = 20% pixel resolution
     });
-    
 
-    // Attach button listeners
+    // Attach Variant Selector Event Listeners
+    document.querySelectorAll('.variant-dropdown').forEach(dropdown => {
+      dropdown.addEventListener('change', (e) => {
+        const carId = e.target.dataset.carId;
+        const selectedVariantId = e.target.value;
+        const car = cars.find(c => c.id === carId);
+
+        if (car && car.variants) {
+          const newVariant = car.variants.find(v => v.variant_id === selectedVariantId);
+          if (newVariant) {
+            // Live update image and trim note
+            const imgEl = document.getElementById(`img-${carId}`);
+            const noteEl = document.getElementById(`note-${carId}`);
+            
+            if (imgEl) imgEl.src = newVariant.image_file;
+            if (noteEl) noteEl.innerText = newVariant.trim_note;
+          }
+        }
+      });
+    });
+
+    // Attach Inspectors and Alerts Listeners
     document.querySelectorAll('.inspect-btn').forEach(btn => {
       btn.addEventListener('click', (e) => openInspector(e.target.dataset.id, cars));
     });
@@ -110,76 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.alert-btn').forEach(btn => {
       btn.addEventListener('click', (e) => openAlertSynthesizer(e.target.dataset.id, cars));
     });
-  }
-
-  /**
-   * Automatic Client-Side Image Pixelator
-   * @param {string} canvasId - The ID of the targeted HTML5 Canvas
-   * @param {string} imageSrc - Source path of standard image file
-   * @param {number} scale - Pixelation ratio (0.1 = heavy pixelation, 0.3 = lighter)
-   */
-  /**
-   * Automatic Client-Side Image Pixelator
-   * Preserves original aspect ratio and increases detail scale.
-   */
-  function pixelateImage(canvasId, imageSrc, scale = 0.35) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    const img = new Image();
-    img.src = imageSrc;
-
-    img.onload = () => {
-      // 1. Calculate aspect ratio to center without stretching
-      const imgRatio = img.width / img.height;
-      const canvasRatio = canvas.width / canvas.height;
-
-      let drawWidth = canvas.width;
-      let drawHeight = canvas.height;
-      let dx = 0;
-      let dy = 0;
-
-      if (imgRatio > canvasRatio) {
-        // Image is wider than canvas -> crop/fill horizontally & center
-        drawWidth = canvas.height * imgRatio;
-        dx = (canvas.width - drawWidth) / 2;
-      } else {
-        // Image is taller than canvas -> crop/fill vertically & center
-        drawHeight = canvas.width / imgRatio;
-        dy = (canvas.height - drawHeight) / 2;
-      }
-
-      // 2. Offscreen downscale canvas using the higher scale (0.35 for fine detail)
-      const tinyWidth = Math.max(32, Math.floor(drawWidth * scale));
-      const tinyHeight = Math.max(16, Math.floor(drawHeight * scale));
-
-      const offscreenCanvas = document.createElement('canvas');
-      offscreenCanvas.width = tinyWidth;
-      offscreenCanvas.height = tinyHeight;
-      const offContext = offscreenCanvas.getContext('2d');
-
-      // Draw photo downscaled onto tiny canvas
-      offContext.drawImage(img, 0, 0, tinyWidth, tinyHeight);
-
-      // 3. Render pixelated result centered on main canvas without distorting
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.imageSmoothingEnabled = false;
-      ctx.webkitImageSmoothingEnabled = false;
-      ctx.mozImageSmoothingEnabled = false;
-
-      ctx.drawImage(offscreenCanvas, 0, 0, tinyWidth, tinyHeight, dx, dy, drawWidth, drawHeight);
-    };
-
-    // Fallback placeholder if image fails to load
-    img.onerror = () => {
-      ctx.fillStyle = '#0f141c';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#3fb950';
-      ctx.font = '12px "VT323", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('[ PIXEL ART PREVIEW ]', canvas.width / 2, canvas.height / 2);
-    };
   }
 
   function openInspector(carId, cars) {
@@ -196,8 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `).join('');
 
+    const activeTrim = car.activeVariant ? car.activeVariant.trim_note : car.recommendedTrim;
+
     modalBody.innerHTML = `
-      <p><strong>Target Spec:</strong> ${car.recommendedTrim}</p>
+      <p><strong>Target Spec:</strong> ${activeTrim}</p>
       <h3 style="margin-top: 15px; font-family: var(--font-pixel); font-size: 12px; color: var(--accent-amber);">KNOWN MECHANICAL FAILURES & INSPECTION CHECKLIST</h3>
       ${issuesHtml}
     `;
