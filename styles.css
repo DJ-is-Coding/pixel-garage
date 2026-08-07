@@ -309,16 +309,23 @@ body {
   font-size: 18px;
   color: var(--accent-amber);
 }
-
-/* Pixel Canvas Side Profile Styling */
-.car-pixel-canvas {
+/* Pixelated Canvas Frame */
+.car-image-container {
   width: 100%;
-  height: 80px;
+  height: 120px;
   background-color: #080b0e;
   border: 2px solid var(--panel-border);
   margin: 10px 0;
-  /* Enforce crisp pixel rendering */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.pixel-art-canvas {
+  width: 100%;
+  height: 100%;
+  /* Force crisp pixel rendering on upscaling */
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  display: block;
 }

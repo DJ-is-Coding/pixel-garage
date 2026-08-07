@@ -1,5 +1,5 @@
 /**
- * Main UI Controller & Pixel Art Renderer
+ * Main UI Controller & Automatic Image-to-Pixel Renderer
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -59,8 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="match-badge">${car.matchScore}% MATCH</span>
         </div>
         
-        <!-- Canvas for Dynamic Pixel Side Profile -->
-        <canvas id="canvas-${car.id}" class="car-pixel-canvas" width="160" height="40"></canvas>
+        <!-- Canvas for Auto-Pixelated Normal Image -->
+        <div class="car-image-container">
+          <canvas id="canvas-${car.id}" class="pixel-art-canvas" width="240" height="120"></canvas>
+        </div>
 
         <div class="car-body">
           <p><strong>Years:</strong> ${car.production_years} | <strong>Category:</strong> ${car.style_category}</p>
@@ -94,8 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       resultsContainer.appendChild(card);
 
-      // Render the pixel art side profile on the canvas
-      drawPixelCar(`canvas-${car.id}`, car.pixel_art);
+      // Auto-pixelate standard photo onto canvas
+      const imageSrc = car.image_file || `${car.id}.jpg`;
+      pixelateImage(`canvas-${car.id}`, imageSrc, 0.15); // 0.15 = 15% pixel resolution
     });
 
     // Attach button listeners
@@ -109,62 +112,52 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Procedural Pixel Art Side Profile Generator
+   * Automatic Client-Side Image Pixelator
+   * @param {string} canvasId - The ID of the targeted HTML5 Canvas
+   * @param {string} imageSrc - Source path of standard image file
+   * @param {number} scale - Pixelation ratio (0.1 = heavy pixelation, 0.3 = lighter)
    */
-  function drawPixelCar(canvasId, artConfig) {
+  function pixelateImage(canvasId, imageSrc, scale = 0.15) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const img = new Image();
+    img.src = imageSrc;
 
-    const bodyColor = artConfig?.body_color || "#3fb950";
-    const type = artConfig?.type || "box_coupe";
+    img.onload = () => {
+      // Calculate scaled down dimensions
+      const tinyWidth = Math.max(16, Math.floor(canvas.width * scale));
+      const tinyHeight = Math.max(8, Math.floor(canvas.height * scale));
 
-    const p = 4; // Pixel scale grid size
+      // Offscreen canvas for downscaling
+      const offscreenCanvas = document.createElement('canvas');
+      offscreenCanvas.width = tinyWidth;
+      offscreenCanvas.height = tinyHeight;
+      const offContext = offscreenCanvas.getContext('2d');
 
-    // Helper: Draw single pixel block
-    function px(x, y, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect(x * p, y * p, p, p);
-    }
+      // Draw high-res image down to tiny size
+      offContext.drawImage(img, 0, 0, tinyWidth, tinyHeight);
 
-    // Draw Ground Grid Line
-    for (let x = 0; x < 40; x++) {
-      px(x, 9, "#1c242f");
-    }
+      // Disable smoothing on main canvas before upscaling
+      ctx.imageSmoothingEnabled = false;
+      ctx.webkitImageSmoothingEnabled = false;
+      ctx.mozImageSmoothingEnabled = false;
 
-    // Body Shapes
-    let roofStart = 12, roofEnd = 25, hoodEnd = 36;
-    if (type === "roadster") { roofStart = 16; roofEnd = 22; }
-    if (type === "fastback") { roofStart = 10; roofEnd = 24; }
+      // Draw downscaled pixels back up to full canvas size
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(offscreenCanvas, 0, 0, tinyWidth, tinyHeight, 0, 0, canvas.width, canvas.height);
+    };
 
-    // Roof & Cabin
-    for (let x = roofStart; x <= roofEnd; x++) {
-      for (let y = 3; y <= 5; y++) {
-        px(x, y, (x > roofStart + 2 && x < roofEnd - 2) ? "#64748b" : bodyColor); // Windows
-      }
-    }
-
-    // Main Body Beltline
-    for (let x = 4; x <= hoodEnd; x++) {
-      for (let y = 6; y <= 7; y++) {
-        px(x, y, bodyColor);
-      }
-    }
-
-    // Headlights & Taillights
-    px(hoodEnd, 6, "#d29922"); // Amber headlight
-    px(4, 6, "#f85149");      // Red taillight
-
-    // Wheels (Front & Rear)
-    function drawWheel(centerX) {
-      px(centerX - 1, 7, "#000"); px(centerX, 7, "#000"); px(centerX + 1, 7, "#000");
-      px(centerX - 1, 8, "#000"); px(centerX, 8, "#d29922"); px(centerX + 1, 8, "#000"); // Alloy core
-      px(centerX - 1, 9, "#000"); px(centerX, 9, "#000"); px(centerX + 1, 9, "#000");
-    }
-
-    drawWheel(10); // Rear Wheel
-    drawWheel(30); // Front Wheel
+    // Fallback placeholder if image is missing
+    img.onerror = () => {
+      ctx.fillStyle = '#0f141c';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#3fb950';
+      ctx.font = '12px "VT323", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('[ PIXEL ART PREVIEW ]', canvas.width / 2, canvas.height / 2);
+    };
   }
 
   function openInspector(carId, cars) {

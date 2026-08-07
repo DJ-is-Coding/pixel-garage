@@ -10,11 +10,7 @@ const CARS_DATABASE = [
     "production_years": "1982-1994",
     "style_category": "Sports Sedan / Coupe",
     "transmission_options": ["manual", "automatic"],
-    "pixel_art": {
-      "type": "box_coupe",
-      "body_color": "#3fb950",
-      "accent_color": "#1b4b23"
-    },
+    "image_file": "bmw_e30_325i.png", // Direct image reference
     "scores": {
       "sportiness": 8,
       "practicality": 7,
@@ -53,11 +49,7 @@ const CARS_DATABASE = [
     "production_years": "1989-1997",
     "style_category": "Roadster",
     "transmission_options": ["manual", "automatic"],
-    "pixel_art": {
-      "type": "roadster",
-      "body_color": "#d29922",
-      "accent_color": "#5c410b"
-    },
+    "image_file": "mazda_miata.png",
     "scores": {
       "sportiness": 9,
       "practicality": 3,
@@ -89,11 +81,7 @@ const CARS_DATABASE = [
     "production_years": "1982-1991",
     "style_category": "Sports Coupe",
     "transmission_options": ["manual", "automatic"],
-    "pixel_art": {
-      "type": "fastback",
-      "body_color": "#f85149",
-      "accent_color": "#6e1a17"
-    },
+    "image_file": "porsche_944.png",
     "scores": {
       "sportiness": 9,
       "practicality": 5,
@@ -125,11 +113,7 @@ const CARS_DATABASE = [
     "production_years": "1976-1985",
     "style_category": "Luxury Classic Sedan",
     "transmission_options": ["automatic", "manual"],
-    "pixel_art": {
-      "type": "box_sedan",
-      "body_color": "#3fb950",
-      "accent_color": "#1b4b23"
-    },
+    "image_file": "mercedes_w123.png",
     "scores": {
       "sportiness": 3,
       "practicality": 9,
