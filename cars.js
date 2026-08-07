@@ -10,6 +10,11 @@ const CARS_DATABASE = [
     "production_years": "1982-1994",
     "style_category": "Sports Sedan / Coupe",
     "transmission_options": ["manual", "automatic"],
+    "pixel_art": {
+      "type": "box_coupe",
+      "body_color": "#3fb950",
+      "accent_color": "#1b4b23"
+    },
     "scores": {
       "sportiness": 8,
       "practicality": 7,
@@ -37,13 +42,6 @@ const CARS_DATABASE = [
         "frequency": "Moderate",
         "estimated_repair_cost": "$1,200 - $3,000+",
         "what_to_look_for": "Check inside front wheel arches, floor pan drains, and battery tray."
-      },
-      {
-        "component": "Odometer Gear Failure",
-        "severity": "Low",
-        "frequency": "Very Common",
-        "estimated_repair_cost": "$50 (DIY)",
-        "what_to_look_for": "Small plastic gears degrade. Check if mileage counter operates during test drive."
       }
     ]
   },
@@ -55,6 +53,11 @@ const CARS_DATABASE = [
     "production_years": "1989-1997",
     "style_category": "Roadster",
     "transmission_options": ["manual", "automatic"],
+    "pixel_art": {
+      "type": "roadster",
+      "body_color": "#d29922",
+      "accent_color": "#5c410b"
+    },
     "scores": {
       "sportiness": 9,
       "practicality": 3,
@@ -75,13 +78,6 @@ const CARS_DATABASE = [
         "frequency": "Uncommon",
         "estimated_repair_cost": "$1,000 - $2,500",
         "what_to_look_for": "Inspect crank pulley for wobbling at idle on early 1.6L models."
-      },
-      {
-        "component": "Rocker Panel Rust",
-        "severity": "High",
-        "frequency": "Very Common",
-        "estimated_repair_cost": "$800 - $2,000",
-        "what_to_look_for": "Clogged soft-top drains cause water build-up inside rear quarter panels."
       }
     ]
   },
@@ -93,6 +89,11 @@ const CARS_DATABASE = [
     "production_years": "1982-1991",
     "style_category": "Sports Coupe",
     "transmission_options": ["manual", "automatic"],
+    "pixel_art": {
+      "type": "fastback",
+      "body_color": "#f85149",
+      "accent_color": "#6e1a17"
+    },
     "scores": {
       "sportiness": 9,
       "practicality": 5,
@@ -105,21 +106,14 @@ const CARS_DATABASE = [
       "automatic_fallback": "944 2.5L Base Automatic",
       "budget_alternative": "944 Base 2.5L 8V Manual"
     },
-    "search_keywords": ["Porsche 944", "Porsche 944 Turbo", "Porsche 951", "Porsche 944 S2"],
+    "search_keywords": ["Porsche 944", "Porsche 944 Turbo", "Porsche 951"],
     "known_issues": [
       {
         "component": "Timing Belt & Water Pump Failure",
         "severity": "Critical",
         "frequency": "Common",
         "estimated_repair_cost": "$1,200 - $1,800",
-        "what_to_look_for": "Belts require retensioning every 15k miles. Interference engine."
-      },
-      {
-        "component": "Clutch Replacement Labor",
-        "severity": "High",
-        "frequency": "Moderate",
-        "estimated_repair_cost": "$2,000 - $3,500",
-        "what_to_look_for": "Transaxle design requires dropping rear suspension and torque tube."
+        "what_to_look_for": "Belts require retensioning every 15k miles."
       }
     ]
   },
@@ -131,6 +125,11 @@ const CARS_DATABASE = [
     "production_years": "1976-1985",
     "style_category": "Luxury Classic Sedan",
     "transmission_options": ["automatic", "manual"],
+    "pixel_art": {
+      "type": "box_sedan",
+      "body_color": "#3fb950",
+      "accent_color": "#1b4b23"
+    },
     "scores": {
       "sportiness": 3,
       "practicality": 9,
@@ -140,24 +139,17 @@ const CARS_DATABASE = [
     },
     "trim_alternatives": {
       "preferred": "300D Turbodiesel (OM617 Engine)",
-      "automatic_fallback": "300D Automatic (Standard and reliable)",
-      "budget_alternative": "240D Manual (Slower, simpler non-turbo)"
+      "automatic_fallback": "300D Automatic",
+      "budget_alternative": "240D Manual"
     },
-    "search_keywords": ["Mercedes W123", "Mercedes 300D", "Mercedes 240D", "W123 Turbodiesel"],
+    "search_keywords": ["Mercedes W123", "Mercedes 300D"],
     "known_issues": [
       {
         "component": "Vacuum System Leaks",
         "severity": "Medium",
         "frequency": "Very Common",
-        "estimated_repair_cost": "$100 - $500 (DIY friendly)",
-        "what_to_look_for": "Controls door locks, shutoff valve, and transmission shift quality."
-      },
-      {
-        "component": "Rust under Battery Tray and Sunroof Drain",
-        "severity": "High",
-        "frequency": "Common",
-        "estimated_repair_cost": "$600 - $1,800",
-        "what_to_look_for": "Water traps cause firewall rust near fuse box."
+        "estimated_repair_cost": "$100 - $500",
+        "what_to_look_for": "Controls door locks and shutoff valve."
       }
     ]
   }

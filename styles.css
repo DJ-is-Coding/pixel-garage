@@ -309,3 +309,16 @@ body {
   font-size: 18px;
   color: var(--accent-amber);
 }
+
+/* Pixel Canvas Side Profile Styling */
+.car-pixel-canvas {
+  width: 100%;
+  height: 80px;
+  background-color: #080b0e;
+  border: 2px solid var(--panel-border);
+  margin: 10px 0;
+  /* Enforce crisp pixel rendering */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+}

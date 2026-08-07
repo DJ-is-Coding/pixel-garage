@@ -1,13 +1,10 @@
 /**
- * Main UI Controller & Search Query Synthesizer
+ * Main UI Controller & Pixel Art Renderer
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Use loaded global CARS_DATABASE or fallback array
   const carData = typeof CARS_DATABASE !== 'undefined' ? CARS_DATABASE : [];
 
-  // DOM Elements
-  const form = document.getElementById('questionnaire-form');
   const calculateBtn = document.getElementById('calculate-btn');
   const resultsContainer = document.getElementById('results-container');
   const inspectorModal = document.getElementById('inspector-modal');
@@ -19,10 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertsCloseBtn = document.getElementById('alerts-close-btn');
   const alertsModalBody = document.getElementById('alerts-modal-body');
 
-  // Initial calculation on load
   runMatching();
 
-  // Event Listeners
   if (calculateBtn) {
     calculateBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -30,13 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (inspectorCloseBtn) {
-    inspectorCloseBtn.addEventListener('click', () => inspectorModal.classList.add('hidden'));
-  }
-  
-  if (alertsCloseBtn) {
-    alertsCloseBtn.addEventListener('click', () => alertsModal.classList.add('hidden'));
-  }
+  if (inspectorCloseBtn) inspectorCloseBtn.addEventListener('click', () => inspectorModal.classList.add('hidden'));
+  if (alertsCloseBtn) alertsCloseBtn.addEventListener('click', () => alertsModal.classList.add('hidden'));
 
   function runMatching() {
     if (!carData.length) {
@@ -68,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="car-title">${car.make} ${car.model} (${car.generation})</span>
           <span class="match-badge">${car.matchScore}% MATCH</span>
         </div>
+        
+        <!-- Canvas for Dynamic Pixel Side Profile -->
+        <canvas id="canvas-${car.id}" class="car-pixel-canvas" width="160" height="40"></canvas>
+
         <div class="car-body">
           <p><strong>Years:</strong> ${car.production_years} | <strong>Category:</strong> ${car.style_category}</p>
           <div class="spec-note">${car.fallbackNote}</div>
@@ -99,9 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       resultsContainer.appendChild(card);
+
+      // Render the pixel art side profile on the canvas
+      drawPixelCar(`canvas-${car.id}`, car.pixel_art);
     });
 
-    // Attach event listeners to dynamic buttons
+    // Attach button listeners
     document.querySelectorAll('.inspect-btn').forEach(btn => {
       btn.addEventListener('click', (e) => openInspector(e.target.dataset.id, cars));
     });
@@ -109,6 +106,65 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.alert-btn').forEach(btn => {
       btn.addEventListener('click', (e) => openAlertSynthesizer(e.target.dataset.id, cars));
     });
+  }
+
+  /**
+   * Procedural Pixel Art Side Profile Generator
+   */
+  function drawPixelCar(canvasId, artConfig) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const bodyColor = artConfig?.body_color || "#3fb950";
+    const type = artConfig?.type || "box_coupe";
+
+    const p = 4; // Pixel scale grid size
+
+    // Helper: Draw single pixel block
+    function px(x, y, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * p, y * p, p, p);
+    }
+
+    // Draw Ground Grid Line
+    for (let x = 0; x < 40; x++) {
+      px(x, 9, "#1c242f");
+    }
+
+    // Body Shapes
+    let roofStart = 12, roofEnd = 25, hoodEnd = 36;
+    if (type === "roadster") { roofStart = 16; roofEnd = 22; }
+    if (type === "fastback") { roofStart = 10; roofEnd = 24; }
+
+    // Roof & Cabin
+    for (let x = roofStart; x <= roofEnd; x++) {
+      for (let y = 3; y <= 5; y++) {
+        px(x, y, (x > roofStart + 2 && x < roofEnd - 2) ? "#64748b" : bodyColor); // Windows
+      }
+    }
+
+    // Main Body Beltline
+    for (let x = 4; x <= hoodEnd; x++) {
+      for (let y = 6; y <= 7; y++) {
+        px(x, y, bodyColor);
+      }
+    }
+
+    // Headlights & Taillights
+    px(hoodEnd, 6, "#d29922"); // Amber headlight
+    px(4, 6, "#f85149");      // Red taillight
+
+    // Wheels (Front & Rear)
+    function drawWheel(centerX) {
+      px(centerX - 1, 7, "#000"); px(centerX, 7, "#000"); px(centerX + 1, 7, "#000");
+      px(centerX - 1, 8, "#000"); px(centerX, 8, "#d29922"); px(centerX + 1, 8, "#000"); // Alloy core
+      px(centerX - 1, 9, "#000"); px(centerX, 9, "#000"); px(centerX + 1, 9, "#000");
+    }
+
+    drawWheel(10); // Rear Wheel
+    drawWheel(30); // Front Wheel
   }
 
   function openInspector(carId, cars) {
