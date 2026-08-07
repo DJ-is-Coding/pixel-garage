@@ -49,7 +49,7 @@ const CARS_DATABASE = [
     "production_years": "1989-1997",
     "style_category": "Roadster",
     "transmission_options": ["manual", "automatic"],
-    "image_file": "mazda_na_miata.jpg",
+    "image_file": "mazda_na_miata.png",
     "scores": {
       "sportiness": 9,
       "practicality": 3,
@@ -81,7 +81,7 @@ const CARS_DATABASE = [
     "production_years": "1982-1991",
     "style_category": "Sports Coupe",
     "transmission_options": ["manual", "automatic"],
-    "image_file": "porsche_944_coupe.jpeg",
+    "image_file": "porsche_944.png",
     "scores": {
       "sportiness": 9,
       "practicality": 5,
