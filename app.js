@@ -3,7 +3,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  let carData = [];
+  // Use loaded global CARS_DATABASE or fallback array
+  const carData = typeof CARS_DATABASE !== 'undefined' ? CARS_DATABASE : [];
 
   // DOM Elements
   const form = document.getElementById('questionnaire-form');
@@ -18,25 +19,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertsCloseBtn = document.getElementById('alerts-close-btn');
   const alertsModalBody = document.getElementById('alerts-modal-body');
 
-  // Fetch local database
-  fetch('js/cars.json')
-    .then(response => response.json())
-    .then(data => {
-      carData = data;
-      runMatching(); // Initial load calculation
-    })
-    .catch(err => {
-      console.error("Error loading cars database:", err);
-      resultsContainer.innerHTML = `<p style="color: var(--accent-red);">[ERROR] Failed to load vehicle library database.</p>`;
-    });
+  // Initial calculation on load
+  runMatching();
 
   // Event Listeners
-  calculateBtn.addEventListener('click', runMatching);
-  inspectorCloseBtn.addEventListener('click', () => inspectorModal.classList.add('hidden'));
-  alertsCloseBtn.addEventListener('click', () => alertsModal.classList.add('hidden'));
+  if (calculateBtn) {
+    calculateBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      runMatching();
+    });
+  }
+
+  if (inspectorCloseBtn) {
+    inspectorCloseBtn.addEventListener('click', () => inspectorModal.classList.add('hidden'));
+  }
+  
+  if (alertsCloseBtn) {
+    alertsCloseBtn.addEventListener('click', () => alertsModal.classList.add('hidden'));
+  }
 
   function runMatching() {
-    if (!carData.length) return;
+    if (!carData.length) {
+      resultsContainer.innerHTML = `<p style="color: var(--accent-red);">[ERROR] Vehicle library database not found.</p>`;
+      return;
+    }
 
     const userInputs = {
       driving_preference: document.getElementById('driving_preference').value,
@@ -132,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const car = cars.find(c => c.id === carId);
     if (!car) return;
 
-    // Synthesize search query using keywords and recommended trim
     const primaryKeyword = car.search_keywords[0];
     const booleanQuery = car.search_keywords.map(k => `"${k}"`).join(' OR ');
 
@@ -151,13 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
       <h3 style="margin-top: 15px; font-family: var(--font-pixel); font-size: 12px; color: var(--accent-green);">PRE-CONFIGURED MARKETPLACE DIRECT LINKS:</h3>
       <ul style="list-style: none; margin-top: 10px;">
         <li style="margin-bottom: 8px;">
-          👉 <a href="${googleAlertsUrl}" target="_blank" style="color: var(--accent-green);">Create Automated Google Alert</a>
+          👉 <a href="${googleAlertsUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-green);">Create Automated Google Alert</a>
         </li>
         <li style="margin-bottom: 8px;">
-          👉 <a href="${batUrl}" target="_blank" style="color: var(--accent-amber);">Search Bring a Trailer Listings</a>
+          👉 <a href="${batUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-amber);">Search Bring a Trailer Listings</a>
         </li>
         <li>
-          👉 <a href="${autoTraderUrl}" target="_blank" style="color: var(--accent-amber);">Search AutoTrader Classic Feed</a>
+          👉 <a href="${autoTraderUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-amber);">Search AutoTrader Classic Feed</a>
         </li>
       </ul>
     `;

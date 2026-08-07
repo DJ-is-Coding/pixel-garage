@@ -1,4 +1,7 @@
-[
+/**
+ * Intelligent Library - Classic Vehicle Database
+ */
+const CARS_DATABASE = [
   {
     "id": "bmw_e30_325i",
     "make": "BMW",
@@ -158,4 +161,4 @@
       }
     ]
   }
-]
+];
